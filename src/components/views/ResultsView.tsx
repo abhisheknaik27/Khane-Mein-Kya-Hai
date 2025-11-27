@@ -272,6 +272,7 @@ interface ResultsViewProps {
   onSaveRecipe: (recipe: Recipe) => void;
   savedRecipeIds: string[]; // List of titles or IDs to check if saved
   onViewSaved: () => void;
+  showLanguage?: boolean;
 }
 
 export const ResultsView = ({
@@ -288,6 +289,7 @@ export const ResultsView = ({
   onSaveRecipe,
   savedRecipeIds,
   onViewSaved,
+  showLanguage = false,
 }: ResultsViewProps) => {
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
 
@@ -303,7 +305,7 @@ export const ResultsView = ({
         onLoginClick={onLoginClick}
         onLogout={onLogout}
         onViewSaved={onViewSaved} // Pass this down
-        showLanguage={false}
+        showLanguage={showLanguage}
       />
 
       <div className="max-w-4xl w-full mx-auto space-y-6 relative z-10 grow pt-4 px-2">

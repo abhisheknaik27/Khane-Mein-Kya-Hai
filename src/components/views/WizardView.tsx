@@ -128,9 +128,13 @@ export const WizardView = ({
                 type="text"
                 value={customInputs[step.id] || ""}
                 onChange={(e) => updateCustomInput(step.id, e.target.value)}
-                placeholder="Add your inputs (seperate by , comma)"
+                placeholder="Add your inputs"
                 className="w-full p-3 rounded-lg border text-black border-stone-200 focus:outline-none focus:ring-2 focus:ring-[#c1dbe8] text-sm"
               />
+              <p className="text-xs text-stone-400 pl-1">
+                Seperate items by{" "}
+                <span className="font-semibold text-sm">,</span> (comma)
+              </p>
             </div>
           )}
 
@@ -171,9 +175,9 @@ export const WizardView = ({
             variant="ghost"
             onClick={onBack}
             disabled={currentStep === 0}
-            className={currentStep === 0 ? "invisible" : ""}
+            className={currentStep === 0 ? "invisible" : "pl-0  "}
           >
-            <ChevronLeft size={20} /> Back
+            <ChevronLeft size={20} className="pr-0" /> Back
           </Button>
           <Button
             onClick={onNext}

@@ -24,7 +24,7 @@ interface HeaderProps {
   onLoginClick: () => void;
   onLogout: () => void;
   onViewSaved?: () => void;
-  showLanguage?: boolean; // <--- NEW PROP
+  showLanguage?: boolean;
 }
 
 export const Header = ({
@@ -62,7 +62,7 @@ export const Header = ({
   const isPro = userProfile?.userType === "pro";
 
   return (
-    <header className="w-full px-2 md:px-12 py-4 flex items-center justify-between relative z-50">
+    <header className="w-full px-4 md:px-12 py-4 flex items-center justify-between relative z-50">
       {/* LEFT: Logo & Name */}
       <div className="flex items-center gap-2">
         <div className="bg-[#c1dbe8] text-white p-2 rounded-lg shadow-sm">
@@ -75,14 +75,14 @@ export const Header = ({
 
       {/* RIGHT: Language & User Dropdown */}
       <div className="flex items-center gap-4">
-        {/* Language Dropdown - CONDITIONAL RENDER */}
+        {/* Language Dropdown */}
         {showLanguage && (
           <div className="relative" ref={langRef}>
             <button
               onClick={() => setShowLangDropdown(!showLangDropdown)}
-              className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-3 py-2 rounded-full shadow-sm border border-stone-200 text-xs text-stone-600 hover:text-stone-800 transition-colors"
+              className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-3 py-2 rounded-full shadow-sm border border-stone-200 text-sm text-stone-600 hover:text-stone-800 transition-colors"
             >
-              <Globe size={16} />
+              <Globe size={24} />
               <span className="uppercase font-medium text-[14px]">
                 {language}
               </span>
@@ -115,13 +115,13 @@ export const Header = ({
           <div className="relative" ref={userRef}>
             <button
               onClick={() => setShowUserDropdown(!showUserDropdown)}
-              className="flex items-center gap-2 bg-white/80 backdrop-blur-sm pl-1 pr-2 py-1 rounded-full border border-stone-200 shadow-sm hover:shadow-md transition-all"
+              className="flex items-center gap-2 bg-white/80 backdrop-blur-sm pl-1 pr-3 py-1 rounded-full border border-stone-200 shadow-sm hover:shadow-md transition-all"
             >
               <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center text-stone-600 font-bold text-sm ${
+                className={`w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-sm ${
                   isPro
                     ? "bg-gradient-to-br from-yellow-400 to-orange-500"
-                    : "bg-blue-200"
+                    : "bg-stone-400"
                 }`}
               >
                 {user.photoURL ? (
@@ -136,7 +136,7 @@ export const Header = ({
                   "U"
                 )}
               </div>
-              <ChevronDown size={15} className="text-stone-400" />
+              <ChevronDown size={16} className="text-stone-400" />
             </button>
 
             {showUserDropdown && (
@@ -214,10 +214,12 @@ export const Header = ({
         ) : (
           <Button
             variant="ghost"
-            className="text-[16px] px-4 py-2 bg-white/90 shadow-sm border border-stone-100 text-stone-600 hover:text-[#c1dbe8] backdrop-blur-sm rounded-full"
+            // Changed: Reduced padding on mobile and added responsive text display
+            className="text-[16px] px-3 md:px-4 py-2 bg-white/90 shadow-sm border border-stone-100 text-stone-600 hover:text-[#c1dbe8] backdrop-blur-sm rounded-full"
             onClick={onLoginClick}
           >
-            <UserIcon size={16} className="mr-2" /> {t(language, "login")}
+            <UserIcon size={16} className="md:mr-2" />
+            <span className="hidden md:inline">{t(language, "login")}</span>
           </Button>
         )}
       </div>

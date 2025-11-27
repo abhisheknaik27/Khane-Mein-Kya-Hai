@@ -1,4 +1,7 @@
+"use client";
+
 import React, { useState, useRef, useEffect } from "react";
+import Link from "next/link"; // Changed: Import Link
 import { User } from "firebase/auth";
 import { UserProfile } from "@/types";
 import {
@@ -14,6 +17,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { LANGUAGES, t } from "@/lib/translations";
+import { ChefLoader } from "@/components/ui/ChefLoader";
 import Image from "next/image";
 
 interface HeaderProps {
@@ -37,6 +41,7 @@ export const Header = ({
   onViewSaved,
   showLanguage = true,
 }: HeaderProps) => {
+  // Removed: const router = useRouter();
   const [showLangDropdown, setShowLangDropdown] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
 
@@ -68,8 +73,8 @@ export const Header = ({
         <div className="bg-[#c1dbe8] text-white p-2 rounded-lg shadow-sm">
           <ChefHat size={28} />
         </div>
-        <span className="heading-merienda text-2xl font-bold text-stone-800 tracking-tight hidden sm:block">
-          KHANE MEIN KYA HAI AI
+        <span className="heading-merienda text-3xl font-bold text-stone-800 tracking-tight hidden sm:block pl-2">
+          Khaane Mein Kya Hai
         </span>
       </div>
 
@@ -80,9 +85,9 @@ export const Header = ({
           <div className="relative" ref={langRef}>
             <button
               onClick={() => setShowLangDropdown(!showLangDropdown)}
-              className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-3 py-2 rounded-full shadow-sm border border-stone-200 text-sm text-stone-600 hover:text-stone-800 transition-colors"
+              className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-3 py-2 rounded-full shadow-sm border border-stone-200 text-xs text-stone-600 hover:text-stone-800 transition-colors"
             >
-              <Globe size={24} />
+              <Globe size={26} />
               <span className="uppercase font-medium text-[14px]">
                 {language}
               </span>
@@ -141,80 +146,92 @@ export const Header = ({
 
             {showUserDropdown && (
               <div className="absolute top-full right-0 mt-2 w-72 bg-white rounded-xl shadow-xl border border-stone-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                <div className="p-4 border-b border-stone-100 bg-stone-50/50">
-                  <p className="font-bold text-stone-800 truncate text-lg">
-                    {user.displayName || "Chef"}
-                  </p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span
-                      className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full border ${
-                        isPro
-                          ? "bg-yellow-100 text-yellow-700 border-yellow-200"
-                          : "bg-stone-100 text-stone-500 border-stone-200"
-                      }`}
-                    >
-                      {isPro ? "PRO MEMBER" : "FREE USER"}
-                    </span>
-                  </div>
-                </div>
+                {!userProfile ? (
+                  <ChefLoader />
+                ) : (
+                  <>
+                    <div className="p-4 border-b border-stone-100 bg-stone-50/50">
+                      <p className="font-bold text-stone-800 truncate text-lg">
+                        {user.displayName || "Chef"}
+                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span
+                          className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full border ${
+                            isPro
+                              ? "bg-yellow-100 text-yellow-700 border-yellow-200"
+                              : "bg-stone-100 text-stone-500 border-stone-200"
+                          }`}
+                        >
+                          {isPro ? "PRO MEMBER" : "FREE USER"}
+                        </span>
+                      </div>
+                    </div>
 
-                <div className="p-4">
-                  <div className="flex justify-between items-center text-sm mb-2">
-                    <span className="text-stone-500 flex items-center gap-1">
-                      <Zap size={14} /> Daily Requests
-                    </span>
-                    <span
-                      className={`font-bold ${
-                        remaining === 0 ? "text-red-500" : "text-stone-700"
-                      }`}
-                    >
-                      {remaining} left
-                    </span>
-                  </div>
-                  <div className="w-full bg-stone-100 h-2 rounded-full overflow-hidden">
-                    <div
-                      className={`h-full ${
-                        isPro ? "bg-yellow-400" : "bg-[#c1dbe8]"
-                      }`}
-                      style={{ width: `${(remaining / maxRequests) * 100}%` }}
-                    />
-                  </div>
-                  {!isPro && (
-                    <button className="w-full mt-4 text-xs flex items-center justify-center gap-1 bg-gradient-to-r from-stone-800 to-stone-900 text-white py-2.5 rounded-lg hover:opacity-90 transition-opacity font-medium">
-                      <Crown size={14} /> Upgrade to PRO
-                    </button>
-                  )}
-                </div>
+                    <div className="p-4">
+                      <div className="flex justify-between items-center text-sm mb-2">
+                        <span className="text-stone-500 flex items-center gap-1">
+                          <Zap size={14} /> Daily Requests
+                        </span>
+                        <span
+                          className={`font-bold ${
+                            remaining === 0 ? "text-red-500" : "text-stone-700"
+                          }`}
+                        >
+                          {remaining} left
+                        </span>
+                      </div>
+                      <div className="w-full bg-stone-100 h-2 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full ${
+                            isPro ? "bg-yellow-400" : "bg-[#c1dbe8]"
+                          }`}
+                          style={{
+                            width: `${(remaining / maxRequests) * 100}%`,
+                          }}
+                        />
+                      </div>
+                      {!isPro && (
+                        // Changed: Replaced <button> with <Link>
+                        <Link
+                          href="/buy-credits"
+                          onClick={() => setShowUserDropdown(false)}
+                          className="w-full mt-4 text-xs flex items-center justify-center gap-1 bg-gradient-to-r from-stone-800 to-stone-900 text-white py-2.5 rounded-lg hover:opacity-90 transition-opacity font-medium"
+                        >
+                          <Crown size={14} /> Buy More Credits
+                        </Link>
+                      )}
+                    </div>
 
-                <div className="p-2 border-t border-stone-100 space-y-1">
-                  <button
-                    onClick={() => {
-                      if (onViewSaved) onViewSaved();
-                      setShowUserDropdown(false);
-                    }}
-                    className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-stone-600 hover:bg-stone-50 rounded-lg transition-colors"
-                  >
-                    <BookHeart size={18} className="text-orange-500" /> Saved
-                    Recipes
-                  </button>
+                    <div className="p-2 border-t border-stone-100 space-y-1">
+                      <button
+                        onClick={() => {
+                          if (onViewSaved) onViewSaved();
+                          setShowUserDropdown(false);
+                        }}
+                        className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-stone-600 hover:bg-stone-50 rounded-lg transition-colors"
+                      >
+                        <BookHeart size={18} className="text-orange-500" />{" "}
+                        Saved Recipes
+                      </button>
 
-                  <button
-                    onClick={() => {
-                      onLogout();
-                      setShowUserDropdown(false);
-                    }}
-                    className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                  >
-                    <LogOut size={18} /> Logout
-                  </button>
-                </div>
+                      <button
+                        onClick={() => {
+                          onLogout();
+                          setShowUserDropdown(false);
+                        }}
+                        className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                      >
+                        <LogOut size={18} /> Logout
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             )}
           </div>
         ) : (
           <Button
             variant="ghost"
-            // Changed: Reduced padding on mobile and added responsive text display
             className="text-[16px] px-3 md:px-4 py-2 bg-white/90 shadow-sm border border-stone-100 text-stone-600 hover:text-[#c1dbe8] backdrop-blur-sm rounded-full"
             onClick={onLoginClick}
           >

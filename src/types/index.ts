@@ -58,6 +58,7 @@ export interface UserProfile {
   userType: "free" | "pro";
   requestsUsed: number;
   lastRequestDate: string; // Stored as "Mon Nov 27 2025" string for easy comparison
+  purchasedCredits: number; // <--- NEW FIELD
 }
 
 // Add to your existing constants or just keep in mind

@@ -29,6 +29,7 @@ export interface FormData {
   allergies: string[];
   time: string;
   mealType: string;
+  recipeCount: string;
   [key: string]: string | string[];
 }
 
@@ -49,5 +50,25 @@ export interface StepConfig {
   options: string[];
   icon: ElementType;
 }
+// Add this to your existing types
+export interface UserProfile {
+  uid: string;
+  displayName: string;
+  email: string;
+  userType: "free" | "pro";
+  requestsUsed: number;
+  lastRequestDate: string; // Stored as "Mon Nov 27 2025" string for easy comparison
+}
 
-export type AppState = "wizard" | "login" | "generating" | "results";
+// Add to your existing constants or just keep in mind
+export const LIMITS = {
+  free: 8,
+  pro: 24,
+};
+
+export type AppState =
+  | "wizard"
+  | "login"
+  | "generating"
+  | "results"
+  | "saved-recipes";

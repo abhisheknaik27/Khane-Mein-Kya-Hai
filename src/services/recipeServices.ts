@@ -55,7 +55,8 @@ const constructPrompt = (
     .replace("__TIME__", formData.time as string)
     .replace("__MEAL__", formData.mealType as string)
     .replace("__LANGUAGE_NAME__", langName)
-    .replace("__LANGUAGE_CODE__", langCode);
+    .replace("__LANGUAGE_CODE__", langCode)
+    .replace("__RECIPE_COUNT__", formData.recipeCount);
 };
 
 export const generateRecipesFromAI = async (
@@ -80,6 +81,8 @@ export const generateRecipesFromAI = async (
     throw new Error("API Key is missing. Check .env.local");
   }
 
+  const count = parseInt(formData.recipeCount) || 2; // Parse count
+
   // UPDATED: Strict check for API URL. No fallback allowed.
   if (!apiUrl) {
     throw new Error("API URL is missing");
@@ -98,6 +101,8 @@ export const generateRecipesFromAI = async (
     throw new Error("Chef is busy (API Error). Please try again.");
   }
 
+  
+
   const data = await response.json();
   let text = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
@@ -114,5 +119,5 @@ export const generateRecipesFromAI = async (
     throw new Error("Invalid recipe format received");
   }
 
-  return parsedRecipes.slice(0, 2);
+  return parsedRecipes.slice(0, count);
 };

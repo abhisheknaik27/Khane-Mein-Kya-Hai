@@ -10,10 +10,22 @@ import {
   signOut,
   User,
 } from "firebase/auth";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  serverTimestamp,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  query,
+  where,
+  getDocs,
+  deleteDoc,
+} from "firebase/firestore";
 
 // --- Local Imports ---
-import { AppState, FormData, CustomInputs, Recipe } from "@/types";
+import { AppState, FormData, CustomInputs, Recipe, UserProfile } from "@/types";
 import {
   INITIAL_FORM_DATA,
   INITIAL_CUSTOM_INPUTS,
@@ -28,20 +40,27 @@ import { LoadingView } from "@/components/views/LoadingView";
 import { ResultsView } from "@/components/views/ResultsView";
 import { WizardView } from "@/components/views/WizardView";
 import { LoginView } from "@/components/views/LoginView";
+import { SavedRecipesView } from "@/components/views/SaveViewedRecipes";
+
+// --- Constants ---
+const REQUEST_LIMITS = { free: 8, pro: 24 };
 
 export default function KhaneMeinKyaHai() {
-  // --- State Management ---
+  // --- State ---
   const [currentStep, setCurrentStep] = useState(0);
   const [user, setUser] = useState<User | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [language, setLanguage] = useState("en");
 
   // Data State
+  const [savedRecipes, setSavedRecipes] = useState<Recipe[]>([]);
+  const [savedRecipeIds, setSavedRecipeIds] = useState<string[]>([]); // To track saved status quickly
   const [formData, setFormData] = useState<FormData>(INITIAL_FORM_DATA);
   const [customInputs, setCustomInputs] = useState<CustomInputs>(
     INITIAL_CUSTOM_INPUTS
   );
 
-  // App Logic State
+  // App State
   const [appState, setAppState] = useState<AppState>("wizard");
   const [loginIntent, setLoginIntent] = useState<"generate" | "resume">(
     "resume"
@@ -59,16 +78,93 @@ export default function KhaneMeinKyaHai() {
   });
   const [authLoading, setAuthLoading] = useState(false);
 
-  // --- Effects ---
+  // --- Auth & Profile Logic ---
+
+  const fetchUserProfile = async (
+    uid: string,
+    displayName?: string,
+    email?: string
+  ) => {
+    if (!db) return;
+    try {
+      const userDocRef = doc(db, "users", uid);
+      const userSnap = await getDoc(userDocRef);
+
+      const today = new Date().toDateString();
+
+      if (userSnap.exists()) {
+        const data = userSnap.data() as UserProfile;
+
+        if (data.lastRequestDate !== today) {
+          // New day! Reset count
+          await updateDoc(userDocRef, {
+            requestsUsed: 0,
+            lastRequestDate: today,
+          });
+          setUserProfile({ ...data, requestsUsed: 0, lastRequestDate: today });
+        } else {
+          setUserProfile(data);
+        }
+      } else {
+        const newProfile: UserProfile = {
+          uid,
+          displayName: displayName || "Chef",
+          email: email || "",
+          userType: "free",
+          requestsUsed: 0,
+          lastRequestDate: today,
+        };
+        await setDoc(userDocRef, newProfile);
+        setUserProfile(newProfile);
+      }
+    } catch (e) {
+      console.error("Error fetching profile:", e);
+    }
+  };
+
+  // --- NEW: Function to Fetch Saved Recipes on Login ---
+  const fetchSavedRecipes = async (uid: string) => {
+    if (!db) return;
+    try {
+      const q = query(collection(db, "users", uid, "saved_recipes"));
+      const querySnapshot = await getDocs(q);
+
+      const loadedRecipes: Recipe[] = [];
+      const loadedIds: string[] = [];
+
+      querySnapshot.forEach((doc) => {
+        const data = doc.data() as Recipe;
+        loadedRecipes.push(data);
+        loadedIds.push(data.title);
+      });
+
+      setSavedRecipes(loadedRecipes);
+      setSavedRecipeIds(loadedIds);
+    } catch (e) {
+      console.error("Error loading saved recipes:", e);
+    }
+  };
+
+  // --- UPDATED: Auth Effect ---
   useEffect(() => {
     if (!auth) return;
     const unsubscribe = onAuthStateChanged(auth, (u) => {
       setUser(u);
+      if (u) {
+        fetchUserProfile(u.uid, u.displayName || "", u.email || "");
+        // Automatically fetch saved recipes when user logs in
+        fetchSavedRecipes(u.uid);
+      } else {
+        // Clear everything on logout
+        setUserProfile(null);
+        setSavedRecipes([]);
+        setSavedRecipeIds([]);
+      }
     });
     return () => unsubscribe();
   }, []);
 
-  // Handlers
+  // --- Handlers ---
 
   const updateFormData = (key: string, value: string, isMulti: boolean) => {
     setFormData((prev) => {
@@ -90,8 +186,8 @@ export default function KhaneMeinKyaHai() {
   };
 
   const handleStartOver = () => {
-    setFormData(INITIAL_FORM_DATA);
-    setCustomInputs(INITIAL_CUSTOM_INPUTS);
+    setFormData({ ...INITIAL_FORM_DATA });
+    setCustomInputs({ ...INITIAL_CUSTOM_INPUTS });
     setCurrentStep(0);
     setRecipes([]);
     setAppState("wizard");
@@ -100,13 +196,13 @@ export default function KhaneMeinKyaHai() {
   const handleLogout = async () => {
     if (auth) {
       await signOut(auth);
-
-      // FIX: Reset all state variables to clear inputs and go to step 1
       setFormData(INITIAL_FORM_DATA);
       setCustomInputs(INITIAL_CUSTOM_INPUTS);
-      setCurrentStep(0); // This takes you back to the first page
+      setCurrentStep(0);
       setRecipes([]);
-
+      setUserProfile(null);
+      setSavedRecipes([]); // Clear saved
+      setSavedRecipeIds([]); // Clear saved IDs
       setAppState("wizard");
     }
   };
@@ -133,12 +229,10 @@ export default function KhaneMeinKyaHai() {
   const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
     if (!auth) {
-      setError("Firebase configuration missing. Cannot login.");
+      setError("Firebase configuration missing.");
       return;
     }
-
     setAuthLoading(true);
 
     try {
@@ -166,70 +260,159 @@ export default function KhaneMeinKyaHai() {
       }
     } catch (err: any) {
       console.error("Auth Error:", err);
-      // Simple error mapping
-      if (err.code === "auth/email-already-in-use") {
+      if (err.code === "auth/email-already-in-use")
         setError("Email already registered.");
-      } else if (err.code === "auth/invalid-credential") {
+      else if (err.code === "auth/invalid-credential")
         setError("Invalid email or password.");
-      } else {
-        setError(err.message || "Authentication failed.");
-      }
+      else setError(err.message || "Authentication failed.");
     } finally {
       setAuthLoading(false);
     }
   };
 
-  // --- Main AI Logic (Delegated to Service) ---
-  const generateRecipes = async () => {
+  // --- UPDATED: Save Logic with Optimistic UI Updates ---
+  const handleSaveRecipe = async (recipe: Recipe) => {
+    if (!auth?.currentUser || !db) {
+      setError("Please login to save recipes.");
+      return;
+    }
+
+    const uid = auth.currentUser.uid;
+    const isAlreadySaved = savedRecipeIds.includes(recipe.title);
+
+    // 1. Optimistic Update (Update UI Immediately)
+    if (isAlreadySaved) {
+      setSavedRecipes((prev) => prev.filter((r) => r.title !== recipe.title));
+      setSavedRecipeIds((prev) => prev.filter((id) => id !== recipe.title));
+    } else {
+      setSavedRecipes((prev) => [...prev, recipe]);
+      setSavedRecipeIds((prev) => [...prev, recipe.title]);
+    }
+
+    // 2. Perform DB Operation
+    try {
+      if (isAlreadySaved) {
+        // UNSAVE LOGIC
+        const q = query(
+          collection(db, "users", uid, "saved_recipes"),
+          where("title", "==", recipe.title)
+        );
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach(async (doc) => {
+          await deleteDoc(doc.ref);
+        });
+      } else {
+        // SAVE LOGIC
+        await addDoc(collection(db, "users", uid, "saved_recipes"), {
+          ...recipe,
+          savedAt: serverTimestamp(),
+        });
+      }
+    } catch (e) {
+      console.error("Error toggling save:", e);
+      // Optional: Revert UI if DB fails
+      setError("Failed to save. Check connection.");
+    }
+  };
+
+  const handleViewSaved = async () => {
+    // If recipes are already fetched by useEffect, just switch view
+    if (savedRecipes.length > 0) {
+      setAppState("saved-recipes");
+      return;
+    }
+
+    // Fallback fetch if empty (e.g. fresh reload)
+    if (!auth?.currentUser || !db) return;
+    setLoadingMsg("Opening your cookbook...");
     setAppState("generating");
-    setError("");
-    setLoadingMsg("Checking your pantry...");
 
     try {
-      // 1. Call the separated service
+      await fetchSavedRecipes(auth.currentUser.uid);
+      setAppState("saved-recipes");
+    } catch (e) {
+      console.error("Error fetching saved:", e);
+      setAppState("wizard");
+    }
+  };
+
+  // --- Main AI Logic ---
+  const generateRecipes = async () => {
+    setError("");
+
+    // 1. Check Profile & Limits
+    if (!user || !db || !userProfile) {
+      if (user) await fetchUserProfile(user.uid);
+      else {
+        setAppState("login");
+        return;
+      }
+    }
+
+    if (!userProfile) {
+      setError("Loading profile... please click next again.");
+      return;
+    }
+
+    // Calculate Credit Cost
+    const requestedCount = parseInt(formData.recipeCount) || 2;
+    const creditCost = Math.ceil(requestedCount / 2);
+
+    const limit =
+      userProfile.userType === "pro" ? REQUEST_LIMITS.pro : REQUEST_LIMITS.free;
+    const currentUsed = userProfile.requestsUsed || 0;
+    const remaining = Math.max(0, limit - currentUsed);
+
+    if (currentUsed + creditCost > limit) {
+      setError(
+        `Not enough credits! This request costs ${creditCost} credit(s), but you only have ${remaining} left today. Upgrade to PRO or request fewer recipes.`
+      );
+      return;
+    }
+
+    setAppState("generating");
+    setLoadingMsg(`Thinking of ${requestedCount} delicious recipes...`);
+
+    try {
       const fetchedRecipes = await generateRecipesFromAI(
         formData,
         customInputs,
         language
       );
 
-      // 2. Update state
+      if (auth && auth.currentUser && db) {
+        const userDocRef = doc(db, "users", auth.currentUser.uid);
+        const newCount = currentUsed + creditCost;
+
+        await updateDoc(userDocRef, {
+          requestsUsed: newCount,
+        });
+
+        setUserProfile({ ...userProfile, requestsUsed: newCount });
+
+        await addDoc(
+          collection(db, "users", auth.currentUser.uid, "recipe_requests"),
+          {
+            request: { ...formData, customInputs, creditCost },
+            timestamp: serverTimestamp(),
+          }
+        );
+      }
+
       setRecipes(fetchedRecipes);
       setAppState("results");
-
-      // 3. Analytics (Side Effect)
-      if (auth && auth.currentUser && db) {
-        try {
-          await addDoc(
-            collection(
-              db,
-              "users", // simplified path
-              auth.currentUser.uid,
-              "recipe_requests"
-            ),
-            {
-              request: { ...formData, customInputs },
-              timestamp: serverTimestamp(),
-            }
-          );
-        } catch (e) {
-          console.log("Analytics save failed", e);
-        }
-      }
     } catch (err: any) {
       console.error("Generation Error:", err);
       setError(err.message || "Oops! The chef dropped the plate.");
-      if (appState !== "results") setAppState("login");
+      if (appState !== "results") setAppState("wizard");
     }
   };
 
   // --- Render ---
   return (
     <div className="min-h-screen relative">
-      {/* 1. Loading State */}
       {appState === "generating" && <LoadingView message={loadingMsg} />}
 
-      {/* 2. Results State */}
       {appState === "results" && (
         <ResultsView
           recipes={recipes}
@@ -244,10 +427,28 @@ export default function KhaneMeinKyaHai() {
             setLoginIntent("resume");
             setAppState("login");
           }}
+          userProfile={userProfile}
+          onSaveRecipe={handleSaveRecipe}
+          savedRecipeIds={savedRecipeIds}
+          onViewSaved={handleViewSaved}
         />
       )}
 
-      {/* 3. Login State */}
+      {appState === "saved-recipes" && (
+        <SavedRecipesView
+          recipes={savedRecipes}
+          user={user}
+          userProfile={userProfile}
+          onLogout={handleLogout}
+          onBack={() => setAppState("wizard")}
+          language={language}
+          setLanguage={setLanguage}
+          onLoginClick={() => {}}
+          onSaveRecipe={handleSaveRecipe}
+          savedRecipeIds={savedRecipeIds}
+        />
+      )}
+
       {appState === "login" && (
         <LoginView
           isSignUp={isSignUp}
@@ -262,7 +463,6 @@ export default function KhaneMeinKyaHai() {
         />
       )}
 
-      {/* 4. Wizard State (Default) */}
       {appState === "wizard" && (
         <WizardView
           currentStep={currentStep}
@@ -280,6 +480,8 @@ export default function KhaneMeinKyaHai() {
             setAppState("login");
           }}
           onLogout={handleLogout}
+          userProfile={userProfile}
+          onViewSaved={handleViewSaved}
         />
       )}
     </div>

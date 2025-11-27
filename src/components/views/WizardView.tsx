@@ -1,9 +1,9 @@
 import React from "react";
 import { STEPS_CONFIG } from "@/lib/constants";
-import { FormData, CustomInputs } from "@/types";
+import { FormData, CustomInputs, UserProfile } from "@/types";
 import { t, getOptionLabel } from "@/lib/translations";
 import { User } from "firebase/auth";
-import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, ChevronLeft, ChevronRight, Zap } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { CheckboxTile, RadioTile } from "@/components/ui/Tiles";
@@ -18,6 +18,7 @@ interface WizardViewProps {
   formData: FormData;
   customInputs: CustomInputs;
   user: User | null;
+  userProfile: UserProfile | null;
   language: string;
   setLanguage: (lang: string) => void;
   updateFormData: (key: string, value: string, isMulti: boolean) => void;
@@ -26,6 +27,7 @@ interface WizardViewProps {
   onBack: () => void;
   onLoginClick: () => void;
   onLogout: () => void;
+  onViewSaved: () => void;
 }
 
 export const WizardView = ({
@@ -33,6 +35,7 @@ export const WizardView = ({
   formData,
   customInputs,
   user,
+  userProfile,
   language,
   setLanguage,
   updateFormData,
@@ -41,6 +44,7 @@ export const WizardView = ({
   onBack,
   onLoginClick,
   onLogout,
+  onViewSaved,
 }: WizardViewProps) => {
   const step = STEPS_CONFIG[currentStep];
   const StepIcon = step.icon;
@@ -60,17 +64,19 @@ export const WizardView = ({
       {/* Extracted Header */}
       <Header
         user={user}
+        userProfile={userProfile}
         language={language}
         setLanguage={setLanguage}
         onLoginClick={onLoginClick}
         onLogout={onLogout}
+        onViewSaved={onViewSaved}
       />
 
       {/* Main Card */}
-      <Card className="w-full max-w-2xl grow md:grow-0 flex flex-col shadow-xl min-h-[60vh] md:min-h-auto animate-in zoom-in-95 duration-300 relative z-10">
+      <Card className="w-full max-w-2xl grow md:grow-0 flex flex-col shadow-xl min-h-[60vh] md:min-h-auto animate-in zoom-in-95 duration-300 relative z-10 mb-6 mt-6">
         <div className="w-full bg-stone-100 h-1.5 rounded-t-2xl overflow-hidden mb-6">
           <div
-            className="bg-[#c1dbe8] h-full transition-all duration-500 ease-out"
+            className="bg-[#0093dd] h-full transition-all duration-500 ease-out"
             style={{
               width: `${((currentStep + 1) / STEPS_CONFIG.length) * 100}%`,
             }}
@@ -125,6 +131,38 @@ export const WizardView = ({
                 placeholder="Add your inputs (seperate by , comma)"
                 className="w-full p-3 rounded-lg border text-black border-stone-200 focus:outline-none focus:ring-2 focus:ring-[#c1dbe8] text-sm"
               />
+            </div>
+          )}
+
+          {isLastStep && (
+            <div className="mt-6 pt-6 border-t border-stone-100 animate-in fade-in slide-in-from-bottom-2">
+              <div className="flex justify-between items-center mb-3">
+                <label className="text-sm font-bold text-stone-700 flex items-center gap-2">
+                  <Zap size={16} className="text-orange-500" />
+                  Generate How Many?
+                </label>
+                <span className="text-xs font-medium text-stone-400 bg-stone-100 px-2 py-1 rounded-md">
+                  {parseInt(formData.recipeCount) / 2} Credits Cost
+                </span>
+              </div>
+
+              <select
+                value={formData.recipeCount}
+                onChange={(e) =>
+                  updateFormData("recipeCount", e.target.value, false)
+                }
+                className="w-full p-3 rounded-xl border border-stone-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#c1dbe8] text-stone-700 font-medium"
+              >
+                {[2, 4, 6, 8, 10].map((num) => (
+                  <option key={num} value={num.toString()}>
+                    Generate {num} Recipes ({num / 2} Credit{num > 2 ? "s" : ""}
+                    )
+                  </option>
+                ))}
+              </select>
+              <p className="text-[11px] text-stone-400 mt-2">
+                *Standard cost is 1 credit per 2 recipes.
+              </p>
             </div>
           )}
         </div>

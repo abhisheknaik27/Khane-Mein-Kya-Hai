@@ -109,6 +109,7 @@ export const INITIAL_FORM_DATA: FormData = {
   allergies: [],
   time: "",
   mealType: "",
+  recipeCount: "2",
 };
 
 export const INITIAL_CUSTOM_INPUTS: CustomInputs = {

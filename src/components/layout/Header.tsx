@@ -89,7 +89,7 @@ export const Header = ({
             </Button>
           </div>
         ) : (
-          // LOGGED-OUT UI
+        
           <>
             {/* Mobile: ONLY icon */}
             <Button

@@ -27,7 +27,11 @@ export const Header = ({
         <div className="bg-[#c1dbe8] text-white p-2 rounded-lg">
           <ChefHat size={26} />
         </div>
-        <span className="heading-merienda text-2xl font-bold text-stone-800 tracking-tight hidden sm:block">
+        <span className="heading-merienda text-xl font-bold text-stone-800 tracking-tight sm:hidden">
+          KKMH AI
+        </span>
+
+        <span className="heading-merienda text-2xl font-bold text-stone-800 tracking-tight hidden sm:inline">
           KHANE MEIN KYA HAI AI
         </span>
       </div>
@@ -67,10 +71,14 @@ export const Header = ({
 
         {/* Auth Buttons */}
         {user ? (
+          // LOGGED-IN UI
           <div className="flex items-center gap-2">
+            {/* Desktop/Tablet: Show Welcome Text */}
             <span className="text-md font-bold text-stone-600 bg-[#e3ebef] px-3 py-1 rounded-xl hidden sm:inline-block">
               {t(language, "welcome")}, {user.displayName}
             </span>
+
+            {/* Logout Icon (visible everywhere) */}
             <Button
               variant="ghost"
               className="p-1 h-auto text-stone-400 hover:text-[#c1dbe8] hover:bg-blue-50 bg-white/80 backdrop-blur-sm shadow-sm"
@@ -81,13 +89,27 @@ export const Header = ({
             </Button>
           </div>
         ) : (
-          <Button
-            variant="ghost"
-            className="text-[16px] px-1 py-1 bg-white/90 shadow-sm border border-stone-100 text-stone-600 hover:text-[#c1dbe8] backdrop-blur-sm"
-            onClick={onLoginClick}
-          >
-            <UserIcon size={15} className="mr-1" /> {t(language, "login")}
-          </Button>
+          // LOGGED-OUT UI
+          <>
+            {/* Mobile: ONLY icon */}
+            <Button
+              variant="ghost"
+              className="sm:hidden p-1 h-auto text-stone-600 hover:text-[#c1dbe8] bg-white/80 backdrop-blur-sm shadow-sm"
+              onClick={onLoginClick}
+              title={t(language, "login")}
+            >
+              <UserIcon size={18} />
+            </Button>
+
+            {/* Desktop/Tablet: Full Login Button */}
+            <Button
+              variant="ghost"
+              className="hidden sm:flex text-[16px] px-2 py-1 bg-white/90 shadow-sm border border-stone-100 text-stone-600 hover:text-[#c1dbe8] backdrop-blur-sm"
+              onClick={onLoginClick}
+            >
+              <UserIcon size={15} className="mr-1" /> {t(language, "login")}
+            </Button>
+          </>
         )}
       </div>
     </div>

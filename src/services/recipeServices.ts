@@ -74,7 +74,7 @@ const constructPrompt = (
     .replace("__MEAL__", formData.mealType as string)
     .replace("__LANGUAGE_NAME__", langName)
     .replace("__LANGUAGE_CODE__", langCode)
-    .replace("__RECIPE_COUNT__", formData.recipeCount || "2");
+    .replace(/__RECIPE_COUNT__/g, formData.recipeCount || "2");
 };
 
 export const generateRecipesFromAI = async (

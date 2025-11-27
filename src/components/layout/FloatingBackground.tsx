@@ -32,7 +32,7 @@ export const FloatingBackground = () => {
   ];
 
   return (
-    <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none bg-[#f7efe7]">
+    <div className="h-screen fixed inset-0 z-0 overflow-hidden pointer-events-none bg-[#f7efe7]">
       <style
         dangerouslySetInnerHTML={{
           __html: `

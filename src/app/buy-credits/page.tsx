@@ -36,7 +36,7 @@ const PLANS = [
     credits: 40,
     price: 299,
     label: "Chef's Special",
-    color: "bg-green-50 border-green-200",
+    color: "bg-red-50 border-red-200",
     recipeCount: 80,
   },
 ];
@@ -172,11 +172,11 @@ export default function BuyCreditsPage() {
           </div>
         )}
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-3 gap-6 ">
           {PLANS.map((plan) => (
             <div
               key={plan.id}
-              className={`relative bg-white/90 backdrop-blur rounded-2xl p-6 shadow-xl border-2 transition-transform hover:-translate-y-1 ${
+              className={`relative bg-white/90 backdrop-blur rounded-2xl p-6 shadow-xl border-2 transition-transform hover:-translate-y-1 mt-6 sm:mt-2 ${
                 plan.color
               } ${
                 plan.popular ? "scale-105 z-20 ring-4 ring-brand-bg-subtle" : ""
@@ -200,7 +200,7 @@ export default function BuyCreditsPage() {
                     size={18}
                     className="text-brand-text-accent fill-brand-text-accent"
                   />
-                  <span className="font-bold text-lg text-stone-400">
+                  <span className="font-bold text-lg text-stone-600">
                     {plan.credits} Credits
                   </span>
                 </div>

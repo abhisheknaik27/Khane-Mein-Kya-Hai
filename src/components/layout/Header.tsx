@@ -139,6 +139,8 @@ export const Header = ({
                     src={user.photoURL}
                     alt="Profile"
                     className="w-full h-full rounded-full object-cover"
+                    width={36}
+                    height={36}
                   />
                 ) : user.displayName ? (
                   user.displayName.charAt(0).toUpperCase()

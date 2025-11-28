@@ -17,7 +17,8 @@ const merienda = Merienda({
 
 export const metadata: Metadata = {
   title: "Khane Mein Kya Hai",
-  description: "Khane Mein Kya Hai is an AI-powered cooking assistant that creates personalized recipes based on what you already have at home. Select your ingredients, appliances, spices, and dietary preferences. The app instantly suggests delicious, easy-to-cook meals tailored to your kitchen. Zero waste, maximum flavor.",
+  description:
+    "Khane Mein Kya Hai is an AI-powered cooking assistant that creates personalized recipes based on what you already have at home. Select your ingredients, appliances, spices, and dietary preferences. The app instantly suggests delicious, easy-to-cook meals tailored to your kitchen. Zero waste, maximum flavor.",
 };
 
 export default function RootLayout({
@@ -27,7 +28,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${roboto.variable} ${merienda.variable} antialiased`}>
+      <body
+        className={`${roboto.variable} ${merienda.variable} antialiased`}
+        suppressHydrationWarning={true}
+      >
         {children}
       </body>
     </html>

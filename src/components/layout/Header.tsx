@@ -70,12 +70,17 @@ export const Header = ({
     <header className="w-full px-4 md:px-12 py-4 flex items-center justify-between relative z-50">
       {/* LEFT: Logo & Name */}
       <div className="flex items-center gap-2">
-        <div className="bg-[#c1dbe8] text-white p-2 rounded-lg shadow-sm">
-          <ChefHat size={28} />
-        </div>
-        <span className="heading-merienda text-3xl font-bold text-stone-800 tracking-tight hidden sm:block pl-2">
-          Khaane Mein Kya Hai
-        </span>
+        <Link
+          href="/"
+          className="flex items-center gap-2 hover:opacity-90 transition-opacity"
+        >
+          <div className="bg-[#c1dbe8] text-white p-2 rounded-lg shadow-sm">
+            <ChefHat size={28} />
+          </div>
+          <span className="heading-merienda text-3xl font-bold text-stone-800 tracking-tight hidden sm:block pl-2">
+            Khaane Mein Kya Hai
+          </span>
+        </Link>
       </div>
 
       {/* RIGHT: Language & User Dropdown */}

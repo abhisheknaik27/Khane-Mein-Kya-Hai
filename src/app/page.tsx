@@ -512,7 +512,6 @@ import {
   setDoc,
   updateDoc,
   query,
-  collectionGroup,
   where,
   getDocs,
   deleteDoc,
@@ -590,16 +589,24 @@ export default function KhaneMeinKyaHai() {
 
       if (userSnap.exists()) {
         const data = userSnap.data() as UserProfile;
+        const safeData = {
+          ...data,
+          purchasedCredits: data.purchasedCredits || 0,
+        };
 
         // Daily Refill Logic: If dates don't match, reset count to 0
-        if (data.lastRequestDate !== today) {
+        if (safeData.lastRequestDate !== today) {
           await updateDoc(userDocRef, {
             requestsUsed: 0,
             lastRequestDate: today,
           });
-          setUserProfile({ ...data, requestsUsed: 0, lastRequestDate: today });
+          setUserProfile({
+            ...safeData,
+            requestsUsed: 0,
+            lastRequestDate: today,
+          });
         } else {
-          setUserProfile(data);
+          setUserProfile(safeData);
         }
       } else {
         const newProfile: UserProfile = {
@@ -609,6 +616,7 @@ export default function KhaneMeinKyaHai() {
           userType: "free",
           requestsUsed: 0,
           lastRequestDate: today,
+          purchasedCredits: 0,
         };
         await setDoc(userDocRef, newProfile);
         setUserProfile(newProfile);

@@ -2,17 +2,17 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-// Removed Razorpay Script
 import { useRouter } from "next/navigation";
-import { getAuth } from "firebase/auth";
-import { app } from "@/lib/firebase";
+import { getAuth, onAuthStateChanged, User, signOut } from "firebase/auth";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { app, db } from "@/lib/firebase";
 import { ArrowLeft, Zap, CheckCircle2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { FloatingBackground } from "@/components/layout/FloatingBackground";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer"; // Import Footer
+import { UserProfile } from "@/types";
 
-// Removed global Window interface for Razorpay
-
-// Updated PLANS with dynamic recipe counts (1 Credit = 2 Recipes)
 const PLANS = [
   {
     id: 1,
@@ -20,7 +20,7 @@ const PLANS = [
     price: 99,
     label: "Starter",
     color: "bg-blue-50 border-blue-200",
-    recipeCount: 20, // 10 * 2
+    recipeCount: 20,
   },
   {
     id: 2,
@@ -29,7 +29,7 @@ const PLANS = [
     label: "Value",
     color: "bg-orange-50 border-orange-200",
     popular: true,
-    recipeCount: 50, // 25 * 2
+    recipeCount: 50,
   },
   {
     id: 3,
@@ -37,18 +37,76 @@ const PLANS = [
     price: 299,
     label: "Chef's Special",
     color: "bg-green-50 border-green-200",
-    recipeCount: 80, // 40 * 2
+    recipeCount: 80,
   },
 ];
 
 export default function BuyCreditsPage() {
   const router = useRouter();
   const auth = getAuth(app);
+
+  // -- State for Header & User Data --
+  const [user, setUser] = useState<User | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [language, setLanguage] = useState("en");
+
+  // -- State for Page Logic --
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // -- Fetch Profile Logic --
+  const fetchUserProfile = async (uid: string) => {
+    if (!db) return;
+    try {
+      const userDocRef = doc(db, "users", uid);
+      const userSnap = await getDoc(userDocRef);
+      const today = new Date().toDateString();
+
+      if (userSnap.exists()) {
+        const data = userSnap.data() as UserProfile;
+
+        const safeData = {
+          ...data,
+          purchasedCredits: data.purchasedCredits || 0,
+        };
+
+        if (safeData.lastRequestDate !== today) {
+          await updateDoc(userDocRef, {
+            requestsUsed: 0,
+            lastRequestDate: today,
+          });
+          setUserProfile({
+            ...safeData,
+            requestsUsed: 0,
+            lastRequestDate: today,
+          });
+        } else {
+          setUserProfile(safeData);
+        }
+      }
+    } catch (e) {
+      console.error("Error fetching profile:", e);
+    }
+  };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (u) => {
+      setUser(u);
+      if (u) {
+        fetchUserProfile(u.uid);
+      } else {
+        setUserProfile(null);
+      }
+    });
+    return () => unsubscribe();
+  }, [auth]);
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    router.push("/");
+  };
+
   const handlePayment = async (plan: (typeof PLANS)[0]) => {
-    const user = auth.currentUser;
     if (!user) {
       setError("Please log in to purchase credits.");
       return;
@@ -58,8 +116,6 @@ export default function BuyCreditsPage() {
     setError("");
 
     try {
-      // 1. Initiate Payment with PhonePe (via your backend)
-      // PhonePe requires server-side checksum generation.
       const res = await fetch("/api/payment/initiate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -68,18 +124,14 @@ export default function BuyCreditsPage() {
           planId: plan.id,
           userId: user.uid,
           credits: plan.credits,
-          // PhonePe often requires a mobile number or unique merchant user id
           merchantUserId: user.uid,
-          mobileNumber: user.phoneNumber || "9999999999", // Fallback or prompt user if needed
+          mobileNumber: user.phoneNumber || "9999999999",
         }),
       });
 
       const data = await res.json();
-
       if (!res.ok) throw new Error(data.error || "Failed to initiate payment");
 
-      // 2. Redirect to PhonePe Payment Page
-      // Unlike Razorpay's modal, PhonePe uses a full page redirect.
       if (data.url) {
         window.location.href = data.url;
       } else {
@@ -88,31 +140,32 @@ export default function BuyCreditsPage() {
     } catch (err: any) {
       console.error(err);
       setError(err.message || "Something went wrong initializing payment.");
-      setLoading(false); // Only stop loading if we didn't redirect
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen p-4 flex flex-col items-center justify-center relative">
+    <div className="min-h-screen flex flex-col items-center relative p-4">
       <FloatingBackground />
-      {/* Removed Razorpay Script Tag */}
 
-      <div className="w-full max-w-4xl relative z-10">
-        <Button
-          variant="ghost"
-          onClick={() => router.push("/")}
-          className="mb-8 hover:bg-white/50"
-        >
-          <ArrowLeft size={20} /> Back to Kitchen
-        </Button>
+      <Header
+        user={user}
+        userProfile={userProfile}
+        language={language}
+        setLanguage={setLanguage}
+        onLoginClick={() => router.push("/")}
+        onLogout={handleLogout}
+        onViewSaved={() => router.push("/")}
+        showLanguage={false}
+      />
 
+      <div className="w-full max-w-4xl relative z-10 px-4 py-8 grow flex flex-col justify-center mt-4">
         <div className="text-center mb-12">
           <h1 className="heading-merienda text-4xl font-bold text-stone-800 mb-4">
             Top Up Your Pantry
           </h1>
           <p className="text-stone-600">
             Get extra credits to generate more delicious recipes instantly.
-            <br />
           </p>
         </div>
 
@@ -122,6 +175,7 @@ export default function BuyCreditsPage() {
           </div>
         )}
 
+        {/* Plans Grid */}
         <div className="grid md:grid-cols-3 gap-6">
           {PLANS.map((plan) => (
             <div
@@ -160,7 +214,6 @@ export default function BuyCreditsPage() {
                   <CheckCircle2 size={16} className="text-green-500" /> Use
                   anytime
                 </li>
-                {/* Dynamically render the recipe count for each card */}
                 <li className="flex items-center gap-2">
                   <CheckCircle2 size={16} className="text-green-500" />
                   Generate up to{" "}
@@ -169,7 +222,7 @@ export default function BuyCreditsPage() {
               </ul>
 
               <Button
-                // onClick={() => handlePayment(plan)}
+                onClick={() => handlePayment(plan)}
                 disabled={loading}
                 className="w-full bg-stone-800 hover:bg-stone-900 text-white"
               >
@@ -178,7 +231,21 @@ export default function BuyCreditsPage() {
             </div>
           ))}
         </div>
+
+        {/* Bottom Back Button */}
+        <div className="mt-16 text-center">
+          <Button
+            variant="outline"
+            onClick={() => router.push("/")}
+            className="mx-auto bg-white/50 border-stone-300 hover:bg-white text-stone-600"
+          >
+            Take me back to kitchen
+          </Button>
+        </div>
       </div>
+
+      {/* Footer Component */}
+      <Footer />
     </div>
   );
 }

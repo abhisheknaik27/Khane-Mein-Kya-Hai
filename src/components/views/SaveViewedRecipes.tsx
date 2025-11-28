@@ -77,8 +77,6 @@ export const SavedRecipesView = (props: SavedRecipesViewProps) => {
           </Button>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 };

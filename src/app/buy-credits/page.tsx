@@ -243,8 +243,6 @@ export default function BuyCreditsPage() {
           </Button>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }

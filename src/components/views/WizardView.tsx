@@ -185,7 +185,6 @@ export const WizardView = ({
           </Button>
         </div>
       </Card>
-      <Footer />
     </div>
   );
 };

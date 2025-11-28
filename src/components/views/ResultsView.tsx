@@ -141,8 +141,6 @@ export const ResultsView = ({
         </div>
       </div>
 
-      <Footer />
-
       <RecipeModal
         recipe={selectedRecipe}
         isOpen={!!selectedRecipe}

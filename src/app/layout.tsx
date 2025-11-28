@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Roboto, Merienda } from "next/font/google";
+import { Footer } from "@/components/layout/Footer";
 
 const roboto = Roboto({
   weight: ["300", "400", "500", "700"],
@@ -33,6 +34,7 @@ export default function RootLayout({
         suppressHydrationWarning={true}
       >
         {children}
+        <Footer/>
       </body>
     </html>
   );

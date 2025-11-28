@@ -8,8 +8,6 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { CheckboxTile, RadioTile } from "@/components/ui/Tiles";
 import { FloatingBackground } from "@/components/layout/FloatingBackground";
-
-// Import the new components
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 
@@ -61,7 +59,6 @@ export const WizardView = ({
     <div className="min-h-screen flex flex-col items-center p-4 relative">
       <FloatingBackground />
 
-      {/* Extracted Header */}
       <Header
         user={user}
         userProfile={userProfile}
@@ -72,11 +69,11 @@ export const WizardView = ({
         onViewSaved={onViewSaved}
       />
 
-      {/* Main Card */}
       <Card className="w-full max-w-2xl grow md:grow-0 flex flex-col shadow-xl min-h-[60vh] md:min-h-auto animate-in zoom-in-95 duration-300 relative z-10 mb-6 mt-6">
         <div className="w-full bg-stone-100 h-1.5 rounded-t-2xl overflow-hidden mb-6">
+          {/* Global Gradient Progress Bar */}
           <div
-            className="bg-[#0093dd] h-full transition-all duration-500 ease-out"
+            className="bg-gradient-to-r from-brand-primary to-brand-secondary h-full transition-all duration-500 ease-out"
             style={{
               width: `${((currentStep + 1) / STEPS_CONFIG.length) * 100}%`,
             }}
@@ -86,7 +83,7 @@ export const WizardView = ({
           <div className="mb-6 flex justify-between items-start">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 bg-blue-50 rounded-lg text-[#c1dbe8]">
+                <div className="p-2 bg-brand-bg-light rounded-lg text-brand-text-accent">
                   <StepIcon size={24} />
                 </div>
                 <h2 className="text-2xl font-bold text-stone-800 ">
@@ -129,7 +126,7 @@ export const WizardView = ({
                 value={customInputs[step.id] || ""}
                 onChange={(e) => updateCustomInput(step.id, e.target.value)}
                 placeholder="Add your inputs"
-                className="w-full p-3 rounded-lg border text-black border-stone-200 focus:outline-none focus:ring-2 focus:ring-[#c1dbe8] text-sm"
+                className="w-full p-3 rounded-lg border text-black border-stone-200 focus:outline-none focus:ring-2 focus:ring-brand-border text-sm"
               />
               <p className="text-xs text-stone-400 pl-1">
                 Seperate items by{" "}
@@ -142,7 +139,7 @@ export const WizardView = ({
             <div className="mt-6 pt-6 border-t border-stone-100 animate-in fade-in slide-in-from-bottom-2">
               <div className="flex justify-between items-center mb-3">
                 <label className="text-sm font-bold text-stone-700 flex items-center gap-2">
-                  <Zap size={16} className="text-orange-500" />
+                  <Zap size={16} className="text-brand-text-accent" />
                   Generate How Many?
                 </label>
                 <span className="text-xs font-medium text-stone-400 bg-stone-100 px-2 py-1 rounded-md">
@@ -155,7 +152,7 @@ export const WizardView = ({
                 onChange={(e) =>
                   updateFormData("recipeCount", e.target.value, false)
                 }
-                className="w-full p-3 rounded-xl border border-stone-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#c1dbe8] text-stone-700 font-medium"
+                className="w-full p-3 rounded-xl border border-stone-200 bg-white focus:outline-none focus:ring-2 focus:ring-brand-border text-stone-700 font-medium"
               >
                 {[2, 4, 6, 8, 10].map((num) => (
                   <option key={num} value={num.toString()}>
@@ -188,8 +185,6 @@ export const WizardView = ({
           </Button>
         </div>
       </Card>
-
-      {/* Extracted Footer */}
       <Footer />
     </div>
   );

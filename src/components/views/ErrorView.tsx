@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { ChefHat, AlertCircle, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/Button";
@@ -24,11 +24,9 @@ export const ErrorView = ({
       <FloatingBackground />
 
       <div className="relative z-10 flex flex-col items-center text-center max-w-md animate-in fade-in zoom-in-95 duration-500">
-        {/* Animated Hat SVG */}
         <div className="relative mb-8">
-          <div className="bg-blue-100 p-8 rounded-full shadow-xl relative">
-            <ChefHat size={80} className="text-blue-400" />
-            {/* A small alert icon indicating something is wrong */}
+          <div className="bg-brand-bg-subtle p-8 rounded-full shadow-xl relative">
+            <ChefHat size={80} className="text-brand-text-light" />
             <div className="absolute -bottom-2 -right-2 bg-red-400 text-white p-2 rounded-full border-4 border-[#f7efe7]">
               <AlertCircle size={24} />
             </div>
@@ -55,7 +53,6 @@ export const ErrorView = ({
             </Button>
           </Link>
 
-          {/* If it's a code error, offer a retry button */}
           {isError && reset && (
             <Button
               variant="outline"

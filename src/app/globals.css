@@ -5,7 +5,37 @@
   --foreground: #171717;
   --font-roboto: "Roboto", system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial;
+
+  /* --- GLOBAL BRAND COLORS --- */
+  /* Change these hex codes to swap the theme globally */
+
+  /* Main Gradient Colors (Buttons, Headers, Logos) */
+  --brand-primary: #f97316; /* orange-500 */
+  --brand-secondary: #ef4444; /* red-500 */
+
+  /* Hover States for Gradient */
+  --brand-primary-hover: #ea580c; /* orange-600 */
+  --brand-secondary-hover: #dc2626; /* red-600 */
+
+  /* Background Tints */
+  --brand-bg-light: #fff7ed; /* orange-50 */
+  --brand-bg-subtle: #ffedd5; /* orange-100 */
+
+  /* Borders & Rings */
+  --brand-border: #fed7aa; /* orange-200 */
+  --brand-border-strong: #fdba74; /* orange-300 */
+
+  /* Text Colors */
+  --brand-text: #ea580c; /* orange-600 */
+  --brand-text-dark: #c2410c; /* orange-700 */
+  --brand-text-light: #fdba74; /* orange-300 */
+  --brand-text-accent: #f97316; /* orange-500 */
+
+  /* Status Colors (Keep consistent) */
+  --status-red-bg: #fef2f2;
+  --status-red-text: #ef4444;
 }
+
 .heading-merienda {
   font-family: var(--font-merienda);
   font-weight: 700;
@@ -16,6 +46,26 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Mapping CSS Variables to Tailwind Classes */
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-secondary: var(--brand-secondary);
+  --color-brand-primary-hover: var(--brand-primary-hover);
+  --color-brand-secondary-hover: var(--brand-secondary-hover);
+
+  --color-brand-bg-light: var(--brand-bg-light);
+  --color-brand-bg-subtle: var(--brand-bg-subtle);
+
+  --color-brand-border: var(--brand-border);
+  --color-brand-border-strong: var(--brand-border-strong);
+
+  --color-brand-text: var(--brand-text);
+  --color-brand-text-dark: var(--brand-text-dark);
+  --color-brand-text-light: var(--brand-text-light);
+  --color-brand-text-accent: var(--brand-text-accent);
+
+  --color-status-red-bg: var(--status-red-bg);
+  --color-status-red-text: var(--status-red-text);
 }
 
 @media (prefers-color-scheme: dark) {

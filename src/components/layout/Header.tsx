@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import Link from "next/link"; // Changed: Import Link
+import Link from "next/link";
 import { User } from "firebase/auth";
 import { UserProfile } from "@/types";
 import {
@@ -29,6 +29,7 @@ interface HeaderProps {
   onLogout: () => void;
   onViewSaved?: () => void;
   showLanguage?: boolean;
+  onLogoClick?: () => void;
 }
 
 export const Header = ({
@@ -40,8 +41,8 @@ export const Header = ({
   onLogout,
   onViewSaved,
   showLanguage = true,
+  onLogoClick,
 }: HeaderProps) => {
-  // Removed: const router = useRouter();
   const [showLangDropdown, setShowLangDropdown] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
 
@@ -72,9 +73,16 @@ export const Header = ({
       <div className="flex items-center gap-2">
         <Link
           href="/"
+          onClick={(e) => {
+            if (onLogoClick) {
+              e.preventDefault();
+              onLogoClick();
+            }
+          }}
           className="flex items-center gap-2 hover:opacity-90 transition-opacity"
         >
-          <div className="bg-[#c1dbe8] text-white p-2 rounded-lg shadow-sm">
+          {/* Global Gradient */}
+          <div className="bg-gradient-to-r from-brand-primary to-brand-secondary text-white p-2 rounded-lg shadow-sm">
             <ChefHat size={28} />
           </div>
           <span className="heading-merienda text-3xl font-bold text-stone-800 tracking-tight hidden sm:block pl-2">
@@ -85,7 +93,6 @@ export const Header = ({
 
       {/* RIGHT: Language & User Dropdown */}
       <div className="flex items-center gap-4">
-        {/* Language Dropdown */}
         {showLanguage && (
           <div className="relative" ref={langRef}>
             <button
@@ -106,9 +113,9 @@ export const Header = ({
                       setLanguage(lang.code);
                       setShowLangDropdown(false);
                     }}
-                    className={`w-full text-left px-4 py-3 text-md hover:bg-blue-50 transition-colors flex items-center justify-between ${
+                    className={`w-full text-left px-4 py-3 text-md hover:bg-brand-bg-light transition-colors flex items-center justify-between ${
                       language === lang.code
-                        ? "text-[#292f17] font-medium bg-blue-50"
+                        ? "text-brand-text-dark font-medium bg-brand-bg-light"
                         : "text-stone-600"
                     }`}
                   >
@@ -120,7 +127,6 @@ export const Header = ({
           </div>
         )}
 
-        {/* User Profile Dropdown */}
         {user ? (
           <div className="relative" ref={userRef}>
             <button
@@ -138,9 +144,9 @@ export const Header = ({
                   <Image
                     src={user.photoURL}
                     alt="Profile"
-                    className="w-full h-full rounded-full object-cover"
                     width={36}
                     height={36}
+                    className="w-full h-full rounded-full object-cover"
                   />
                 ) : user.displayName ? (
                   user.displayName.charAt(0).toUpperCase()
@@ -188,9 +194,12 @@ export const Header = ({
                         </span>
                       </div>
                       <div className="w-full bg-stone-100 h-2 rounded-full overflow-hidden">
+                        {/* Global Progress Bar */}
                         <div
                           className={`h-full ${
-                            isPro ? "bg-yellow-400" : "bg-[#c1dbe8]"
+                            isPro
+                              ? "bg-yellow-400"
+                              : "bg-gradient-to-r from-brand-primary to-brand-secondary"
                           }`}
                           style={{
                             width: `${(remaining / maxRequests) * 100}%`,
@@ -198,11 +207,10 @@ export const Header = ({
                         />
                       </div>
                       {!isPro && (
-                        // Changed: Replaced <button> with <Link>
                         <Link
                           href="/buy-credits"
                           onClick={() => setShowUserDropdown(false)}
-                          className="w-full mt-4 text-xs flex items-center justify-center gap-1 bg-gradient-to-r from-stone-800 to-stone-900 text-white py-2.5 rounded-lg hover:opacity-90 transition-opacity font-medium"
+                          className="w-full mt-4 text-sm flex items-center justify-center gap-1 bg-gradient-to-r from-stone-800 to-stone-900 text-white py-2.5 rounded-lg hover:opacity-90 transition-opacity font-medium"
                         >
                           <Crown size={14} /> Buy More Credits
                         </Link>
@@ -217,7 +225,10 @@ export const Header = ({
                         }}
                         className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-stone-600 hover:bg-stone-50 rounded-lg transition-colors"
                       >
-                        <BookHeart size={18} className="text-orange-500" />{" "}
+                        <BookHeart
+                          size={18}
+                          className="text-brand-text-accent"
+                        />{" "}
                         Saved Recipes
                       </button>
 
@@ -226,7 +237,7 @@ export const Header = ({
                           onLogout();
                           setShowUserDropdown(false);
                         }}
-                        className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                        className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-status-red-text hover:bg-status-red-bg rounded-lg transition-colors"
                       >
                         <LogOut size={18} /> Logout
                       </button>
@@ -239,7 +250,7 @@ export const Header = ({
         ) : (
           <Button
             variant="ghost"
-            className="text-[16px] px-3 md:px-4 py-2 bg-white/90 shadow-sm border border-stone-100 text-stone-600 hover:text-[#c1dbe8] backdrop-blur-sm rounded-full"
+            className="text-[16px] px-3 md:px-4 py-2 bg-white/90 shadow-sm border border-stone-100 text-stone-600 hover:text-brand-text-accent backdrop-blur-sm rounded-full"
             onClick={onLoginClick}
           >
             <UserIcon size={16} className="md:mr-2" />

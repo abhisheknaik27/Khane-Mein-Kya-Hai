@@ -10,7 +10,7 @@ import { ArrowLeft, Zap, CheckCircle2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { FloatingBackground } from "@/components/layout/FloatingBackground";
 import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer"; // Import Footer
+import { Footer } from "@/components/layout/Footer";
 import { UserProfile } from "@/types";
 
 const PLANS = [
@@ -19,7 +19,7 @@ const PLANS = [
     credits: 10,
     price: 99,
     label: "Starter",
-    color: "bg-blue-50 border-blue-200",
+    color: "bg-red-50 border-red-200",
     recipeCount: 20,
   },
   {
@@ -27,7 +27,7 @@ const PLANS = [
     credits: 25,
     price: 199,
     label: "Value",
-    color: "bg-orange-50 border-orange-200",
+    color: "bg-brand-bg-subtle border-brand-border",
     popular: true,
     recipeCount: 50,
   },
@@ -45,16 +45,13 @@ export default function BuyCreditsPage() {
   const router = useRouter();
   const auth = getAuth(app);
 
-  // -- State for Header & User Data --
   const [user, setUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [language, setLanguage] = useState("en");
 
-  // -- State for Page Logic --
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // -- Fetch Profile Logic --
   const fetchUserProfile = async (uid: string) => {
     if (!db) return;
     try {
@@ -159,7 +156,7 @@ export default function BuyCreditsPage() {
         showLanguage={false}
       />
 
-      <div className="w-full max-w-4xl relative z-10 px-4 py-8 grow flex flex-col justify-center mt-4">
+      <div className="w-full max-w-4xl relative z-10 px-4 py-8 grow flex flex-col justify-center">
         <div className="text-center mb-12">
           <h1 className="heading-merienda text-4xl font-bold text-stone-800 mb-4">
             Top Up Your Pantry
@@ -170,22 +167,23 @@ export default function BuyCreditsPage() {
         </div>
 
         {error && (
-          <div className="mb-8 p-4 bg-red-100 text-red-700 rounded-xl flex items-center justify-center gap-2">
+          <div className="mb-8 p-4 bg-status-red-bg text-status-red-text rounded-xl flex items-center justify-center gap-2">
             <AlertCircle size={20} /> {error}
           </div>
         )}
 
-        {/* Plans Grid */}
         <div className="grid md:grid-cols-3 gap-6">
           {PLANS.map((plan) => (
             <div
               key={plan.id}
               className={`relative bg-white/90 backdrop-blur rounded-2xl p-6 shadow-xl border-2 transition-transform hover:-translate-y-1 ${
                 plan.color
-              } ${plan.popular ? "scale-105 z-20 ring-4 ring-orange-100" : ""}`}
+              } ${
+                plan.popular ? "scale-105 z-20 ring-4 ring-brand-bg-subtle" : ""
+              }`}
             >
               {plan.popular && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-brand-primary text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
                   MOST POPULAR
                 </div>
               )}
@@ -198,7 +196,10 @@ export default function BuyCreditsPage() {
                   <span className="text-5xl font-extrabold">{plan.price}</span>
                 </div>
                 <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-xl shadow-sm border border-stone-100">
-                  <Zap size={18} className="text-orange-500 fill-orange-500" />
+                  <Zap
+                    size={18}
+                    className="text-brand-text-accent fill-brand-text-accent"
+                  />
                   <span className="font-bold text-lg text-stone-400">
                     {plan.credits} Credits
                   </span>
@@ -232,19 +233,17 @@ export default function BuyCreditsPage() {
           ))}
         </div>
 
-        {/* Bottom Back Button */}
-        <div className="mt-16 text-center">
+        <div className="mt-12 text-center">
           <Button
             variant="outline"
             onClick={() => router.push("/")}
             className="mx-auto bg-white/50 border-stone-300 hover:bg-white text-stone-600"
           >
-            Take me back to kitchen
+            <ArrowLeft size={20} /> Take me back to kitchen
           </Button>
         </div>
       </div>
 
-      {/* Footer Component */}
       <Footer />
     </div>
   );

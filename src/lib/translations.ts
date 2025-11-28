@@ -7,10 +7,10 @@ export const LANGUAGES = [
   { code: "te", name: "Telugu (తెలుగు)" },
   { code: "ta", name: "Tamil (தமிழ்)" },
   { code: "gu", name: "Gujarati (ગુજરાતી)" },
-  { code: "ur", name: "Urdu (اردو)" },
-  { code: "kn", name: "Kannada (ಕನ್ನಡ)" },
-  { code: "or", name: "Odia (ଓଡ଼ିଆ)" },
-  { code: "ml", name: "Malayalam (മലയാളം)" },
+  // { code: "ur", name: "Urdu (اردو)" },
+  // { code: "kn", name: "Kannada (ಕನ್ನಡ)" },
+  // { code: "or", name: "Odia (ଓଡ଼ିଆ)" },
+  // { code: "ml", name: "Malayalam (മലയാളം)" },
   { code: "bn", name: "Bengali (বাংলা)" },
 ];
 

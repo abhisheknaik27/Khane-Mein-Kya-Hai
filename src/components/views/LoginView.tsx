@@ -23,7 +23,7 @@ interface LoginViewProps {
   loginForm: LoginFormState;
   setLoginForm: (form: LoginFormState) => void;
   onSubmit: (e: React.FormEvent) => void;
-  onGoogleLogin: () => void; // <--- Add this prop
+  onGoogleLogin: () => void;
   loading: boolean;
   error: string;
   firebaseError?: string;
@@ -36,7 +36,7 @@ export const LoginView = ({
   loginForm,
   setLoginForm,
   onSubmit,
-  onGoogleLogin, // <--- Destructure here
+  onGoogleLogin,
   loading,
   error,
   firebaseError,
@@ -50,7 +50,7 @@ export const LoginView = ({
 
       <Card className="w-full max-w-md p-8 animate-in fade-in slide-in-from-bottom-4 duration-500 relative z-10">
         <div className="text-center mb-6">
-          <div className="bg-blue-100 w-18 h-18 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="bg-brand-bg-subtle w-18 h-18 rounded-full flex items-center justify-center mx-auto mb-4">
             <ChefHat size={34} className="text-black" />
           </div>
           <h2 className="text-2xl font-bold text-stone-800">
@@ -64,7 +64,7 @@ export const LoginView = ({
         </div>
 
         {firebaseError && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 flex gap-3 text-sm">
+          <div className="mb-6 p-4 bg-status-red-bg border border-red-100 rounded-xl text-status-red-text flex gap-3 text-sm">
             <AlertCircle size={20} className="shrink-0" />
             <div>
               <p className="font-bold">Configuration Missing</p>
@@ -76,13 +76,12 @@ export const LoginView = ({
           </div>
         )}
 
-        {/* Toggle Switch */}
         <div className="flex p-1 bg-stone-100 rounded-xl mb-6">
           <button
             onClick={() => setIsSignUp(true)}
             className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${
               isSignUp
-                ? "bg-white text-blue-500 shadow-sm"
+                ? "bg-white text-brand-text shadow-sm"
                 : "text-stone-500 hover:text-stone-700"
             }`}
             type="button"
@@ -93,7 +92,7 @@ export const LoginView = ({
             onClick={() => setIsSignUp(false)}
             className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${
               !isSignUp
-                ? "bg-white text-blue-500 shadow-sm"
+                ? "bg-white text-brand-text shadow-sm"
                 : "text-stone-500 hover:text-stone-700"
             }`}
             type="button"
@@ -102,14 +101,12 @@ export const LoginView = ({
           </button>
         </div>
 
-        {/* Google Login Button */}
         <button
           type="button"
           onClick={onGoogleLogin}
           disabled={loading}
           className="w-full flex items-center justify-center gap-3 bg-white border border-stone-200 text-stone-700 font-medium py-3 rounded-xl hover:bg-stone-50 active:scale-95 transition-all mb-6"
         >
-          {/* Google Logo SVG */}
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path
               d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -132,12 +129,11 @@ export const LoginView = ({
         </button>
 
         <div className="flex items-center gap-4 mb-6">
-          <div className="h-px bg-stone-200 flex-1"></div>
+          <div className="h-[1px] bg-stone-200 flex-1"></div>
           <span className="text-stone-400 text-xs uppercase font-bold">Or</span>
-          <div className="h-px bg-stone-200 flex-1"></div>
+          <div className="h-[1px] bg-stone-200 flex-1"></div>
         </div>
 
-        {/* Email Form */}
         <form onSubmit={onSubmit} className="space-y-4">
           {isSignUp && (
             <div>
@@ -147,7 +143,7 @@ export const LoginView = ({
               <input
                 required
                 type="text"
-                className="w-full px-4 py-3 rounded-xl text-black border border-stone-200 focus:outline-none focus:ring-2 focus:ring-[#c1dbe8] transition-all"
+                className="w-full px-4 py-3 rounded-xl text-black border border-stone-200 focus:outline-none focus:ring-2 focus:ring-brand-border transition-all"
                 placeholder="Enter your name"
                 value={loginForm.name}
                 onChange={(e) =>
@@ -164,7 +160,7 @@ export const LoginView = ({
             <input
               required
               type="email"
-              className="w-full px-4 py-3 text-black rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-[#c1dbe8] transition-all"
+              className="w-full px-4 py-3 text-black rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-brand-border transition-all"
               placeholder="Enter your email"
               value={loginForm.email}
               onChange={(e) =>
@@ -181,7 +177,7 @@ export const LoginView = ({
               <input
                 required
                 type={showPassword ? "text" : "password"}
-                className="w-full px-4 py-3 text-black rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-[#c1dbe8] transition-all pr-10"
+                className="w-full px-4 py-3 text-black rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-brand-border transition-all pr-10"
                 placeholder="Enter password"
                 value={loginForm.password}
                 onChange={(e) =>
@@ -200,7 +196,7 @@ export const LoginView = ({
           </div>
 
           {error && (
-            <div className="p-3 bg-red-50 text-red-600 text-sm rounded-lg flex items-center gap-2">
+            <div className="p-3 bg-status-red-bg text-status-red-text text-sm rounded-lg flex items-center gap-2">
               <AlertCircle size={16} /> {error}
             </div>
           )}

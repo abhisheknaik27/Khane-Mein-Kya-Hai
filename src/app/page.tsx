@@ -11,6 +11,8 @@ import {
   User,
   GoogleAuthProvider,
   signInWithPopup,
+  getAdditionalUserInfo, //
+  deleteUser, //
 } from "firebase/auth";
 import {
   collection,
@@ -289,7 +291,30 @@ export default function KhaneMeinKyaHai() {
     const provider = new GoogleAuthProvider();
 
     try {
-      await signInWithPopup(auth, provider);
+      // 1. Perform SignIn (captures result)
+      const result = await signInWithPopup(auth, provider);
+
+      // 2. Determine if user is new
+      const additionalUserInfo = getAdditionalUserInfo(result);
+      const isNewUser = additionalUserInfo?.isNewUser;
+
+      // 3. Logic: If "Login Mode" (!isSignUp) BUT user is New -> Revert & Redirect
+      if (!isSignUp && isNewUser) {
+        try {
+          // Delete the accidentally created account
+          await deleteUser(result.user);
+        } catch (cleanupErr) {
+          console.error("Cleanup error:", cleanupErr);
+        }
+
+        // Take user to Signup UI
+        setIsSignUp(true);
+        setError("Account does not exist. Please sign up to create a profile.");
+        // Stop execution (do not proceed to wizard)
+        return;
+      }
+
+      // 4. Logic: If "Signup Mode" (isSignUp) AND user exists -> Automatically Login (default behavior)
 
       // Clear Form Fields on Success
       setLoginForm({ name: "", email: "", password: "" });

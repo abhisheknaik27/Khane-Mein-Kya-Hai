@@ -25,6 +25,7 @@ const constructPrompt = (
   langCode: string
 ) => {
   let template = process.env.NEXT_PUBLIC_GEMINI_PROMPT_TEMPLATE;
+  const count = formData.recipeCount || "2";
 
   // Fallback template if env var is missing or empty (Safety Net)
   if (!template) {
@@ -50,6 +51,12 @@ const constructPrompt = (
   // Fix JSON quotes (replace single quotes with double if template uses singles)
   template = template.replace(/'/g, '"');
 
+  // Check if the template actually has the placeholder. If not, we append an explicit instruction.
+  // This handles cases where a user has a custom ENV template that lacks the __RECIPE_COUNT__ placeholder.
+  if (!template.includes("__RECIPE_COUNT__")) {
+    template += `\n\nIMPORTANT: You MUST generate exactly ${count} recipes in the output JSON array.`;
+  }
+
   // Replace Placeholders
   return template
     .replace(
@@ -74,7 +81,7 @@ const constructPrompt = (
     .replace("__MEAL__", formData.mealType as string)
     .replace("__LANGUAGE_NAME__", langName)
     .replace("__LANGUAGE_CODE__", langCode)
-    .replace(/__RECIPE_COUNT__/g, formData.recipeCount || "2");
+    .replace(/__RECIPE_COUNT__/g, count);
 };
 
 export const generateRecipesFromAI = async (

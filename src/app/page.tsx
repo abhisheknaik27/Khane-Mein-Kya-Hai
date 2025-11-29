@@ -195,8 +195,9 @@ export default function KhaneMeinKyaHai() {
   };
 
   const handleStartOver = () => {
-    setFormData({ ...INITIAL_FORM_DATA });
-    setCustomInputs({ ...INITIAL_CUSTOM_INPUTS });
+    // Deep Reset: We create a fresh object to ensure no references persist
+    setFormData(JSON.parse(JSON.stringify(INITIAL_FORM_DATA)));
+    setCustomInputs(JSON.parse(JSON.stringify(INITIAL_CUSTOM_INPUTS)));
     setCurrentStep(0);
     setRecipes([]);
     setAppState("wizard");
@@ -205,8 +206,9 @@ export default function KhaneMeinKyaHai() {
   const handleLogout = async () => {
     if (auth) {
       await signOut(auth);
-      setFormData(INITIAL_FORM_DATA);
-      setCustomInputs(INITIAL_CUSTOM_INPUTS);
+      // Reset everything on logout too
+      setFormData(JSON.parse(JSON.stringify(INITIAL_FORM_DATA)));
+      setCustomInputs(JSON.parse(JSON.stringify(INITIAL_CUSTOM_INPUTS)));
       setCurrentStep(0);
       setRecipes([]);
       setUserProfile(null);
@@ -388,7 +390,7 @@ export default function KhaneMeinKyaHai() {
 
     // Check Limits
     if (currentUsed + creditCost > limit) {
-      // UPDATED: Trigger Modal instead of Error Text
+      // Trigger Modal instead of Error Text
       setShowLimitModal(true);
       return;
     }
@@ -454,7 +456,7 @@ export default function KhaneMeinKyaHai() {
           onSaveRecipe={handleSaveRecipe}
           savedRecipeIds={savedRecipeIds}
           onViewSaved={handleViewSaved}
-          showLanguage={false} // UPDATED: Hide language in results
+          showLanguage={false} // Hide language in results
         />
       )}
 
@@ -464,13 +466,13 @@ export default function KhaneMeinKyaHai() {
           user={user}
           userProfile={userProfile}
           onLogout={handleLogout}
-          onBack={() => setAppState("wizard")}
+          onBack={handleStartOver} // <--- UPDATED: This now clears inputs and resets steps
           language={language}
           setLanguage={setLanguage}
           onLoginClick={() => {}}
           onSaveRecipe={handleSaveRecipe}
           savedRecipeIds={savedRecipeIds}
-          showLanguage={false} // UPDATED: Hide language in saved view
+          showLanguage={false} // Hide language in saved view
         />
       )}
 
@@ -511,7 +513,7 @@ export default function KhaneMeinKyaHai() {
         />
       )}
 
-      {/* NEW: Limit Reached Modal */}
+      {/* Limit Reached Modal */}
       <LimitModal
         isOpen={showLimitModal}
         onClose={() => setShowLimitModal(false)}

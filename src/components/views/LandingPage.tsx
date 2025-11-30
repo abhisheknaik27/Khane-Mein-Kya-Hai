@@ -37,7 +37,7 @@ export const LandingPage = ({
   onViewSaved,
 }: LandingPageProps) => {
   return (
-    <div className="min-h-screen p-4 flex flex-col relative overflow-x-hidden">
+    <div className="min-h-screen py-2 flex flex-col relative overflow-x-hidden">
       <FloatingBackground />
 
       <Header
@@ -159,8 +159,7 @@ export const LandingPage = ({
               <ul className="space-y-4 mb-8">
                 <li className="flex items-center gap-3 text-stone-600">
                   <CheckCircle2 size={20} className="text-brand-primary" />
-                  <span className="font-semibold">8 Credits Daily</span>{" "}
-                  (Refills every 24h)
+                  <span className="font-semibold">8 Credits Daily</span>
                 </li>
                 <li className="flex items-center gap-3 text-stone-600">
                   <CheckCircle2 size={20} className="text-brand-primary" />
@@ -168,7 +167,7 @@ export const LandingPage = ({
                 </li>
                 <li className="flex items-center gap-3 text-stone-600">
                   <CheckCircle2 size={20} className="text-brand-primary" />
-                  <span>Standard Support</span>
+                  <span>Credits Refill After 24h</span>
                 </li>
               </ul>
               <Button
@@ -227,8 +226,8 @@ export const LandingPage = ({
       </section>
 
       {/* SEO FOOTER NOTE */}
-      <section className="relative z-10 w-full py-10 px-4 text-center">
-        <p className="text-stone-400 text-sm max-w-2xl mx-auto">
+      <section className="relative z-10 w-full py-8 px-6 text-center">
+        <p className="text-stone-500 text-sm max-w-4xl mx-auto">
           Genie Bites is your personal AI Recipe Generator. Whether you need
           Indian vegetarian recipes, healthy dinner ideas, or instant snacks
           using common ingredients like potatoes and onions, we help you reduce

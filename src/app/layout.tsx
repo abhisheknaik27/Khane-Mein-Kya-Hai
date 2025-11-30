@@ -43,7 +43,7 @@ export default function RootLayout({
         suppressHydrationWarning={true}
       >
         {children}
-        <Footer />
+        {/* <Footer /> */}
       </body>
     </html>
   );

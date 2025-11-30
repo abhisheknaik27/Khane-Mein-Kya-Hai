@@ -59,7 +59,7 @@ export const LandingPage = ({
             <span>The #1 AI Cooking Assistant</span>
           </div>
 
-          <h1 className="heading-merienda text-5xl md:text-7xl font-bold text-stone-800 mb-6 leading-tight">
+          <h1 className="heading-merienda text-3xl md:text-6xl font-bold text-stone-800 mb-2 leading-tight">
             Your Kitchen <br />
             <span className="bg-gradient-to-r from-brand-primary to-brand-secondary text-transparent bg-clip-text">
               Needs a Genie.

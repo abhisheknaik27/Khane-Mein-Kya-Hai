@@ -55,7 +55,7 @@ export const Footer = () => {
 
         <div className="text-sm md:text-lg text-stone-500 pb-2">
           <span className="font-semibold bg-gradient-to-r from-brand-primary to-brand-secondary inline-block text-transparent bg-clip-text">
-            &ldquo;Khaane Mein Kya Hai&rdquo;
+            &ldquo;Genie Bites&rdquo;
           </span>
           : The Ultimate AI Food Assistant
         </div>

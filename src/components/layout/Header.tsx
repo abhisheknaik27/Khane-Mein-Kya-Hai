@@ -86,7 +86,7 @@ export const Header = ({
             <ChefHat size={28} />
           </div>
           <span className="heading-merienda text-3xl font-bold text-stone-800 tracking-tight hidden sm:block pl-2">
-            Khaane Mein Kya Hai
+            Genie Bites
           </span>
         </Link>
       </div>

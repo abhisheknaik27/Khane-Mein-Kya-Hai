@@ -68,6 +68,7 @@ export const LIMITS = {
 };
 
 export type AppState =
+  | "landing"
   | "wizard"
   | "login"
   | "generating"

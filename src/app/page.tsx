@@ -11,8 +11,8 @@ import {
   User,
   GoogleAuthProvider,
   signInWithPopup,
-  getAdditionalUserInfo, //
-  deleteUser, //
+  getAdditionalUserInfo,
+  deleteUser,
 } from "firebase/auth";
 import {
   collection,
@@ -45,12 +45,13 @@ import { ResultsView } from "@/components/views/ResultsView";
 import { WizardView } from "@/components/views/WizardView";
 import { LoginView } from "@/components/views/LoginView";
 import { SavedRecipesView } from "@/components/views/SaveViewedRecipes";
+import { LandingPage } from "@/components/views/LandingPage";
 import { LimitModal } from "@/components/ui/LimitModal";
 
 // --- Constants ---
 const REQUEST_LIMITS = { free: 8, pro: 24 };
 
-export default function KhaneMeinKyaHai() {
+export default function GenieBites() {
   // --- State ---
   const [currentStep, setCurrentStep] = useState(0);
   const [user, setUser] = useState<User | null>(null);
@@ -67,7 +68,9 @@ export default function KhaneMeinKyaHai() {
   );
 
   // App State
-  const [appState, setAppState] = useState<AppState>("wizard");
+  // Start at Landing Page by default
+  const [appState, setAppState] = useState<AppState>("landing");
+
   const [loginIntent, setLoginIntent] = useState<"generate" | "resume">(
     "resume"
   );
@@ -216,7 +219,7 @@ export default function KhaneMeinKyaHai() {
       setUserProfile(null);
       setSavedRecipes([]);
       setSavedRecipeIds([]);
-      setAppState("wizard");
+      setAppState("landing"); // Redirect to landing page on logout
     }
   };
 
@@ -461,6 +464,22 @@ export default function KhaneMeinKyaHai() {
   // --- Render ---
   return (
     <div className="min-h-screen relative">
+      {appState === "landing" && (
+        <LandingPage
+          user={user}
+          userProfile={userProfile}
+          language={language}
+          setLanguage={setLanguage}
+          onLoginClick={() => {
+            setLoginIntent("resume");
+            setAppState("login");
+          }}
+          onLogout={handleLogout}
+          onGetStarted={() => setAppState("wizard")}
+          onViewSaved={handleViewSaved}
+        />
+      )}
+
       {appState === "generating" && <LoadingView message={loadingMsg} />}
 
       {appState === "results" && (
@@ -491,7 +510,7 @@ export default function KhaneMeinKyaHai() {
           user={user}
           userProfile={userProfile}
           onLogout={handleLogout}
-          onBack={handleStartOver} // <--- UPDATED: This now clears inputs and resets steps
+          onBack={handleStartOver}
           language={language}
           setLanguage={setLanguage}
           onLoginClick={() => {}}

@@ -17,9 +17,18 @@ const merienda = Merienda({
 });
 
 export const metadata: Metadata = {
-  title: "Khane Mein Kya Hai",
+  title: "Genie Bites - Your AI Kitchen Assistant",
   description:
-    "Khane Mein Kya Hai is an AI-powered cooking assistant that creates personalized recipes based on what you already have at home. Select your ingredients, appliances, spices, and dietary preferences. The app instantly suggests delicious, easy-to-cook meals tailored to your kitchen. Zero waste, maximum flavor.",
+    "Genie Bites (Khane Mein Kya Hai) turns your leftover ingredients into delicious recipes instantly. The ultimate AI recipe generator for Indian cooking, supporting regional languages (Hindi, Marathi, etc.). Reduce food waste and cook smarter with what you have in your pantry.",
+  keywords: [
+    "AI recipe generator",
+    "Indian cooking app",
+    "pantry recipes",
+    "food waste reducer",
+    "Genie Bites",
+    "cooking assistant",
+    "recipe maker",
+  ],
 };
 
 export default function RootLayout({
@@ -34,7 +43,7 @@ export default function RootLayout({
         suppressHydrationWarning={true}
       >
         {children}
-        <Footer/>
+        <Footer />
       </body>
     </html>
   );

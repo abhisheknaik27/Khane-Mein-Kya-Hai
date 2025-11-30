@@ -1,8 +1,20 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { ChefHat, Instagram, Mail, Heart } from "lucide-react";
 
+const EMOJIS = ["❤️", "🍕", "🍔", "🍜", "🍰", "🍫"];
+
 export const LandingFooter = () => {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % EMOJIS.length);
+    }, 2000); // Cycle every 2 seconds
+
+    return () => clearInterval(interval);
+  }, []);
   return (
     <footer className="bg-stone-900 text-stone-300 py-12 border-t border-stone-800 relative z-50 px-4">
       <div className="max-w-6xl mx-auto px-4 grid grid-cols-2 md:grid-cols-5 gap-8 mb-8">
@@ -106,11 +118,30 @@ export const LandingFooter = () => {
       </div>
 
       {/* Bottom Bar */}
-      <div className="max-w-6xl mx-auto px-4 pt-8 border-t border-stone-800 flex flex-col md:flex-row justify-between items-center text-xs text-stone-500">
+      <div className="max-w-6xl mx-auto px-4 pt-8 border-t border-stone-800 flex flex-col md:flex-row justify-between items-center text-sm text-stone-400">
+        <style>
+          {`
+          @keyframes vertical-fade {
+            0% { opacity: 0; transform: translateY(8px); }
+            20% { opacity: 1; transform: translateY(0); }
+            80% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-8px); }
+          }
+          .emoji-fade {
+            animation: vertical-fade 2s ease-in-out forwards;
+          }
+        `}
+        </style>
         <p>© {new Date().getFullYear()} Genie Bites. All rights reserved.</p>
         <div className="flex items-center gap-1 mt-2 md:mt-0">
           <span>Made with</span>
-          <Heart size={12} className="text-red-500 fill-red-500" />
+          <span
+            key={index}
+            className="emoji-fade inline-block w-6 text-center text-xl"
+          >
+            {EMOJIS[index]}
+          </span>
+          {/* <Heart size={12} className="text-red-500 fill-red-500" /> */}
           <span>by Abhishek Naik</span>
         </div>
       </div>
